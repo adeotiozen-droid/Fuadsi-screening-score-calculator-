@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FUADSI – Admission Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1a5c2a;
+    --green-mid: #2e7d44;
+    --green-light: #4caf70;
+    --gold: #c8a83a;
+    --gold-light: #e8c85a;
+    --cream: #faf7f0;
+    --dark: #0d1f11;
+    --text: #1c2e1e;
+    --muted: #5a7060;
+    --border: #d4e0d6;
+    --white: #ffffff;
+    --red: #c0392b;
+    --blue: #1a4a7a;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--dark);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 clamp(1rem, 4vw, 3rem);
+    height: 64px;
+    border-bottom: 2px solid var(--gold);
+  }
+  .nav-brand { display: flex; align-items: center; gap: .75rem; text-decoration: none; }
+  .nav-logo {
+    width: 42px; height: 42px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-weight: 900; color: var(--dark); font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .nav-title { font-family: 'Playfair Display', serif; color: var(--white); font-size: 1rem; line-height: 1.2; }
+  .nav-title span { display: block; font-size: .7rem; color: var(--gold-light); font-family: 'DM Sans', sans-serif; font-weight: 300; letter-spacing: .05em; }
+  .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+  .nav-links a { color: #c8d8cc; text-decoration: none; font-size: .85rem; font-weight: 500; letter-spacing: .03em; transition: color .2s; }
+  .nav-links a:hover { color: var(--gold-light); }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+  .hamburger span { display: block; width: 24px; height: 2px; background: var(--white); transition: .3s; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 92vh;
+    background: linear-gradient(155deg, var(--dark) 0%, #0f3018 40%, #1a5c2a 100%);
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    padding: 4rem clamp(1rem, 5vw, 5rem);
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(200,168,58,.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,168,58,.08) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .hero-glow {
+    position: absolute; width: 600px; height: 600px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(76,175,112,.15) 0%, transparent 70%);
+    top: -100px; right: -100px;
+    animation: pulse 6s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1);opacity:.6} 50%{transform:scale(1.1);opacity:1} }
+  .hero-content { position: relative; z-index: 1; max-width: 800px; text-align: center; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: .5rem;
+    background: rgba(200,168,58,.15); border: 1px solid rgba(200,168,58,.4);
+    color: var(--gold-light); padding: .4rem 1rem; border-radius: 2rem;
+    font-size: .78rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    animation: fadeDown .8s ease both;
+  }
+  .hero-badge::before { content: '●'; font-size: .5rem; animation: blink 1.5s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 6vw, 4.5rem);
+    line-height: 1.1; color: var(--white); margin-bottom: 1.25rem;
+    animation: fadeUp .9s .2s ease both;
+  }
+  .hero h1 em { color: var(--gold-light); font-style: normal; }
+  .hero p {
+    font-size: clamp(.9rem, 2vw, 1.15rem);
+    color: #a8c4b0; max-width: 600px; margin: 0 auto 2.5rem;
+    line-height: 1.7; animation: fadeUp .9s .4s ease both;
+  }
+  .hero-ctas {
+    display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+    animation: fadeUp .9s .6s ease both;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .8rem 2rem; border-radius: .4rem; font-size: .9rem;
+    font-weight: 600; text-decoration: none; cursor: pointer;
+    border: none; transition: all .25s; font-family: 'DM Sans', sans-serif;
+  }
+  .btn-gold { background: var(--gold); color: var(--dark); }
+  .btn-gold:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(200,168,58,.35); }
+  .btn-outline { background: transparent; color: var(--white); border: 1.5px solid rgba(255,255,255,.35); }
+  .btn-outline:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.6); transform: translateY(-2px); }
+  .btn-green { background: var(--green-mid); color: var(--white); }
+  .btn-green:hover { background: var(--green-light); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(46,125,68,.35); }
+
+  .hero-stats {
+    display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;
+    margin-top: 3.5rem; padding-top: 2.5rem;
+    border-top: 1px solid rgba(255,255,255,.1);
+    animation: fadeUp .9s .8s ease both;
+  }
+  .stat { text-align: center; }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--gold-light); line-height: 1; }
+  .stat-label { font-size: .75rem; color: #7a9e85; margin-top: .25rem; letter-spacing: .05em; text-transform: uppercase; }
+
+  /* ── SECTION ── */
+  section { padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 5vw, 5rem); }
+  .section-label {
+    display: inline-block; color: var(--green-mid); font-size: .75rem;
+    font-weight: 600; letter-spacing: .12em; text-transform: uppercase; margin-bottom: .75rem;
+  }
+  h2.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 4vw, 2.8rem); line-height: 1.2; margin-bottom: 1rem;
+    color: var(--dark);
+  }
+  .section-sub { color: var(--muted); max-width: 580px; line-height: 1.7; margin-bottom: 2.5rem; }
+
+  /* ── CALCULATOR ── */
+  #calculator { background: var(--white); }
+  .calc-wrapper {
+    max-width: 820px; margin: 0 auto;
+    background: var(--cream); border: 1px solid var(--border);
+    border-radius: 1.2rem; padding: clamp(1.5rem, 4vw, 3rem);
+    box-shadow: 0 4px 40px rgba(26,92,42,.07);
+  }
+  .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  @media(max-width:640px){ .calc-grid { grid-template-columns: 1fr; } }
+
+  .calc-card {
+    background: var(--white); border: 1.5px solid var(--border);
+    border-radius: .9rem; padding: 1.5rem;
+  }
+  .calc-card-title {
+    font-family: 'Playfair Display', serif; font-size: 1.05rem;
+    color: var(--dark); margin-bottom: 1.25rem;
+    display: flex; align-items: center; gap: .6rem;
+  }
+  .calc-card-title .badge {
+    background: var(--green); color: var(--white);
+    font-family: 'DM Mono', monospace; font-size: .7rem;
+    padding: .15rem .5rem; border-radius: .3rem;
+  }
+  label { display: block; font-size: .82rem; font-weight: 500; color: var(--muted); margin-bottom: .4rem; margin-top: 1rem; }
+  label:first-of-type { margin-top: 0; }
+  input[type=number], select {
+    width: 100%; padding: .65rem .9rem;
+    border: 1.5px solid var(--border); border-radius: .5rem;
+    font-family: 'DM Sans', sans-serif; font-size: .9rem; color: var(--text);
+    background: var(--cream); transition: border-color .2s, box-shadow .2s;
+    appearance: none;
+  }
+  input[type=number]:focus, select:focus {
+    outline: none; border-color: var(--green-mid);
+    box-shadow: 0 0 0 3px rgba(46,125,68,.12);
+  }
+  .grade-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+  .grade-label { font-size: .78rem; color: var(--muted); font-weight: 500; margin-bottom: .3rem; }
+
+  .calc-action { grid-column: 1/-1; display: flex; justify-content: center; margin-top: .5rem; }
+  .calc-action .btn { padding: .9rem 2.5rem; font-size: 1rem; }
+
+  /* RESULT */
+  #result-card {
+    display: none; margin-top: 2rem;
+    background: var(--dark); border-radius: 1rem; padding: 2rem;
+    color: var(--white); position: relative; overflow: hidden;
+  }
+  #result-card.visible { display: block; animation: fadeUp .5s ease; }
+  .result-bg {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(76,175,112,.15) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .result-inner { position: relative; z-index: 1; }
+  .result-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+  .result-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; }
+  .eligibility-badge {
+    padding: .4rem 1rem; border-radius: 2rem;
+    font-size: .82rem; font-weight: 600; letter-spacing: .05em;
+  }
+  .eligible { background: rgba(76,175,112,.2); color: #7ee8a2; border: 1px solid rgba(76,175,112,.4); }
+  .not-eligible { background: rgba(192,57,43,.2); color: #f1948a; border: 1px solid rgba(192,57,43,.4); }
+
+  .score-breakdown { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1.5rem; }
+  @media(max-width:500px){ .score-breakdown { grid-template-columns: 1fr; } }
+  .score-item { background: rgba(255,255,255,.07); border-radius: .6rem; padding: 1rem; text-align: center; }
+  .score-val { font-family: 'DM Mono', monospace; font-size: 1.6rem; color: var(--gold-light); line-height: 1; }
+  .score-lbl { font-size: .72rem; color: #8aada0; margin-top: .25rem; letter-spacing: .04em; text-transform: uppercase; }
+
+  .progress-bar-wrap { margin-bottom: 1.5rem; }
+  .progress-label { display: flex; justify-content: space-between; font-size: .82rem; color: #a8c4b0; margin-bottom: .5rem; }
+  .progress-track { height: 10px; background: rgba(255,255,255,.1); border-radius: 10px; overflow: hidden; }
+  .progress-fill {
+    height: 100%; border-radius: 10px; transition: width 1s ease;
+    background: linear-gradient(90deg, var(--green-light), var(--gold));
+  }
+  .status-tag {
+    display: inline-block; padding: .5rem 1.2rem; border-radius: .4rem;
+    font-weight: 700; font-size: .9rem; margin-bottom: 1rem;
+  }
+  .status-high { background: rgba(76,175,112,.25); color: #7ee8a2; }
+  .status-mod { background: rgba(200,168,58,.25); color: #e8c85a; }
+  .status-low { background: rgba(230,150,50,.25); color: #f0aa60; }
+  .status-vlow { background: rgba(192,57,43,.25); color: #f1948a; }
+
+  /* ── NOTICE ── */
+  #notice { background: #f0f7f2; }
+  .notice-box {
+    max-width: 820px; margin: 0 auto;
+    border: 2px solid var(--green);
+    border-radius: 1rem; overflow: hidden;
+    box-shadow: 0 4px 32px rgba(26,92,42,.1);
+  }
+  .notice-header {
+    background: var(--green); color: var(--white);
+    padding: 1.2rem 2rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .notice-header .icon { font-size: 1.5rem; }
+  .notice-header h3 { font-family: 'Playfair Display', serif; font-size: 1.15rem; }
+  .notice-header span { font-size: .78rem; opacity: .8; display: block; margin-top: .1rem; }
+  .notice-body { padding: 2rem; }
+  .notice-body p { line-height: 1.8; color: var(--text); margin-bottom: 1rem; font-size: .93rem; }
+  .notice-body p:last-child { margin-bottom: 0; }
+  .notice-body strong { color: var(--green); }
+  .notice-list { margin: 1rem 0 1rem 1.2rem; }
+  .notice-list li { margin-bottom: .5rem; font-size: .9rem; color: var(--text); line-height: 1.6; }
+  .notice-footer {
+    background: #e8f5ec; padding: 1rem 2rem;
+    display: flex; align-items: center; gap: .75rem;
+    font-size: .82rem; color: var(--green);
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── COURSES ── */
+  #courses { background: var(--white); }
+  .faculty-tabs {
+    display: flex; gap: .75rem; flex-wrap: wrap; margin-bottom: 2rem;
+  }
+  .tab-btn {
+    padding: .55rem 1.2rem; border-radius: 2rem; border: 1.5px solid var(--border);
+    font-family: 'DM Sans', sans-serif; font-size: .83rem; font-weight: 500;
+    cursor: pointer; transition: all .2s; background: var(--cream); color: var(--muted);
+  }
+  .tab-btn.active { background: var(--green); color: var(--white); border-color: var(--green); }
+  .tab-btn:hover:not(.active) { border-color: var(--green-mid); color: var(--green-mid); }
+
+  .courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+  .course-card {
+    background: var(--cream); border: 1.5px solid var(--border);
+    border-radius: .8rem; padding: 1.1rem 1.25rem;
+    display: flex; align-items: flex-start; gap: .75rem;
+    transition: all .2s; cursor: default;
+  }
+  .course-card:hover { border-color: var(--green-mid); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26,92,42,.08); }
+  .course-icon {
+    width: 36px; height: 36px; border-radius: .5rem;
+    background: var(--green); color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+  }
+  .course-name { font-size: .88rem; font-weight: 500; color: var(--text); line-height: 1.4; }
+  .course-faculty { font-size: .72rem; color: var(--muted); margin-top: .2rem; }
+
+  /* ── ABOUT ── */
+  #about { background: var(--dark); color: var(--white); }
+  #about .section-label { color: var(--gold-light); }
+  #about h2.section-title { color: var(--white); }
+  #about .section-sub { color: #a8c4b0; }
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+  @media(max-width:768px){ .about-grid { grid-template-columns: 1fr; } }
+  .about-features { display: flex; flex-direction: column; gap: 1.25rem; }
+  .about-feat {
+    display: flex; align-items: flex-start; gap: 1rem;
+    padding: 1rem 1.25rem; border-radius: .7rem;
+    background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08);
+    transition: background .2s;
+  }
+  .about-feat:hover { background: rgba(255,255,255,.09); }
+  .feat-icon {
+    width: 40px; height: 40px; border-radius: .5rem;
+    background: var(--green); display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; flex-shrink: 0;
+  }
+  .feat-title { font-weight: 600; font-size: .93rem; margin-bottom: .25rem; }
+  .feat-desc { font-size: .82rem; color: #8aada0; line-height: 1.5; }
+  .contact-box {
+    background: rgba(200,168,58,.1); border: 1px solid rgba(200,168,58,.3);
+    border-radius: .9rem; padding: 1.75rem;
+  }
+  .contact-box h4 { font-family: 'Playfair Display', serif; font-size: 1.15rem; margin-bottom: 1.25rem; color: var(--gold-light); }
+  .contact-item { display: flex; gap: .75rem; margin-bottom: 1rem; align-items: flex-start; }
+  .contact-item .ci-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: .1rem; }
+  .contact-item .ci-label { font-size: .72rem; color: #7a9e85; text-transform: uppercase; letter-spacing: .06em; }
+  .contact-item .ci-val { font-size: .9rem; color: #d8e8dc; margin-top: .1rem; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #080f09; color: #5a7060;
+    text-align: center; padding: 1.5rem;
+    font-size: .8rem; border-top: 1px solid rgba(255,255,255,.06);
+  }
+  footer strong { color: var(--gold-light); }
+
+  /* ── UTIL ── */
+  .text-center { text-align: center; }
+  .alert {
+    padding: .75rem 1rem; border-radius: .5rem; font-size: .85rem;
+    margin-top: 1rem; display: none;
+  }
+  .alert.show { display: block; }
+  .alert-error { background: rgba(192,57,43,.1); border: 1px solid rgba(192,57,43,.3); color: var(--red); }
+
+  /* Mobile nav */
+  @media(max-width:768px){
+    .nav-links { display: none; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: var(--dark); padding: 1.5rem; gap: 1rem; border-bottom: 2px solid var(--gold); }
+    .nav-links.open { display: flex; }
+    .hamburger { display: flex; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-brand">
+    <img src="logo.jpg" alt="FUADSI Logo" style="width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);flex-shrink:0;">
+    <div class="nav-title">FUADSI<span>Federal University of Agriculture &amp; Development Studies, Iragbiji</span></div>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#notice">Admission Notice</a></li>
+    <li><a href="#calculator">Score Calculator</a></li>
+    <li><a href="#courses">Courses</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleNav()" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <!-- Campus gate background -->
+  <div style="position:absolute;inset:0;z-index:0;">
+    <img src="gate.jpg" alt="FUADSI Campus" style="width:100%;height:100%;object-fit:cover;opacity:0.28;filter:saturate(0.5) brightness(0.7);">
+  </div>
+  <div class="hero-content">
+    <img src="logo.jpg" alt="FUADSI Logo" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);margin-bottom:1.25rem;box-shadow:0 0 50px rgba(200,168,58,.4);display:block;margin-left:auto;margin-right:auto;">
+    <div class="hero-badge">2026/2027 Admissions Now Open</div>
+    <h1>Welcome to <em>FUADSI</em> Admission Portal</h1>
+    <p>Federal University of Agriculture and Development Studies, Iragbiji — Osun State. Check your eligibility, calculate your screening score, and explore available programmes.</p>
+    <div class="hero-ctas">
+      <a href="#calculator" class="btn btn-gold">📊 Calculate My Score</a>
+      <a href="#courses" class="btn btn-outline">🎓 Browse Courses</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">3</div><div class="stat-label">Faculties</div></div>
+      <div class="stat"><div class="stat-num">35+</div><div class="stat-label">Programmes</div></div>
+      <div class="stat"><div class="stat-num">150</div><div class="stat-label">Min. JAMB Score</div></div>
+      <div class="stat"><div class="stat-num">2026</div><div class="stat-label">Session</div></div>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- ADMISSION NOTICE -->
+<section id="notice">
+  <div class="text-center" style="margin-bottom:2rem">
+    <span class="section-label">Official Communication</span>
+    <h2 class="section-title">Admission Notice</h2>
+    <p class="section-sub" style="margin:0 auto">Read the official admission notice from the Federal University of Agriculture and Development Studies, Iragbiji for the 2026/2027 academic session.</p>
+  </div>
+  <div class="notice-box">
+    <div class="notice-header">
+      <div class="icon">📋</div>
+      <div>
+        <h3>FUADSI Admission Notice — 2026/2027 Academic Session</h3>
+        <span>Issued by the Office of the Registrar, FUADSI, Iragbiji, Osun State</span>
+      </div>
+    </div>
+    <div class="notice-body">
+      <p>The management of the <strong>Federal University of Agriculture and Development Studies, Iragbiji (FUADSI)</strong>, Osun State, hereby invites applications from suitably qualified candidates for admission into its undergraduate degree programmes for the <strong>2026/2027 academic session</strong>.</p>
+      <p><strong>Screening Exercise:</strong> All candidates who chose FUADSI as their <strong>first choice institution</strong> in the 2026 UTME and scored a minimum of <strong>150</strong> in the Joint Admissions and Matriculation Board (JAMB) examination are invited to participate in the Post-UTME/DE screening exercise.</p>
+      <p><strong>Requirements for Eligibility:</strong></p>
+      <ul class="notice-list">
+        <li>Minimum JAMB score of <strong>150</strong> (candidates below this threshold are <strong>not eligible</strong>).</li>
+        <li>Minimum of <strong>five (5) O'Level credit passes</strong> including English Language and Mathematics, obtained at not more than two sittings (WAEC/NECO/NABTEB).</li>
+        <li>Each programme may have specific subject requirements — consult the departmental requirements for your chosen course.</li>
+        <li>Direct Entry (DE) candidates must possess relevant ND/HND/A-Level qualifications as stipulated.</li>
+      </ul>
+      <p><strong>Screening Score Computation:</strong> The composite score is derived from <strong>JAMB score (60%)</strong> and <strong>O'Level performance (40%)</strong>, giving a total score out of 100.</p>
+      <p><strong>Mode of Screening:</strong> Computer-Based Test (CBT) and O'Level credentials verification. Candidates are advised to upload valid O'Level result(s) during registration.</p>
+      <p><strong>Important:</strong> All candidates are advised to regularly visit the <strong>FUADSI official portal</strong> and their registered email addresses for updates on screening dates, venues, and admission list releases. FUADSI does not engage any agent for admission purposes — beware of fraudsters.</p>
+    </div>
+    
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section id="calculator">
+  <div class="text-center" style="margin-bottom:2rem">
+    <span class="section-label">Admission Tool</span>
+    <h2 class="section-title">Screening Score Calculator</h2>
+    <p class="section-sub" style="margin:0 auto">Enter your JAMB score and O'Level grades to instantly compute your FUADSI composite screening score and check your eligibility.</p>
+  </div>
+  <div class="calc-wrapper">
+    <div class="calc-grid">
+
+      <!-- JAMB -->
+      <div class="calc-card">
+        <div class="calc-card-title">
+          JAMB Score (UTME)
+          <span class="badge">60%</span>
+        </div>
+        <label for="jamb">Your JAMB Score (0 – 400)</label>
+        <input type="number" id="jamb" min="0" max="400" placeholder="e.g. 250" />
+        <div style="margin-top:.75rem;padding:.6rem .9rem;background:#f0f7f2;border-radius:.5rem;font-size:.8rem;color:var(--muted);">
+          ℹ️ Minimum required: <strong style="color:var(--green)">150</strong> — scores below 150 are ineligible.
+        </div>
+      </div>
+
+      <!-- O'LEVEL -->
+      <div class="calc-card">
+        <div class="calc-card-title">
+          O'Level Grades
+          <span class="badge">40%</span>
+        </div>
+        <p style="font-size:.8rem;color:var(--muted);margin-bottom:.75rem">Select grades for your best 5 subjects (A1=8, B2=7, B3=6, C4=5, C5=4, C6=3)</p>
+        <div class="grade-grid">
+          <div id="grades-area">
+            <!-- injected by JS -->
+          </div>
+        </div>
+      </div>
+
+      <div class="calc-action">
+        <button class="btn btn-green" onclick="calculate()">⚡ Calculate My Score</button>
+      </div>
+    </div>
+
+    <div class="alert alert-error" id="calc-error"></div>
+
+    <!-- RESULT -->
+    <div id="result-card">
+      <div class="result-bg"></div>
+      <div class="result-inner">
+        <div class="result-header">
+          <div class="result-title">Your Screening Result</div>
+          <div class="eligibility-badge" id="elig-badge"></div>
+        </div>
+        <div class="score-breakdown">
+          <div class="score-item">
+            <div class="score-val" id="res-jamb">—</div>
+            <div class="score-lbl">JAMB (60%)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-val" id="res-olevel">—</div>
+            <div class="score-lbl">O'Level (40%)</div>
+          </div>
+          <div class="score-item">
+            <div class="score-val" id="res-total">—</div>
+            <div class="score-lbl">Total Score</div>
+          </div>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-label">
+            <span>Composite Score</span>
+            <span id="prog-label">0 / 100</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="prog-fill" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="status-tag" id="status-tag"></div>
+        <p id="result-msg" style="font-size:.88rem;color:#a8c4b0;line-height:1.7"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COURSES -->
+<section id="courses">
+  <div class="text-center" style="margin-bottom:2rem">
+    <span class="section-label">Academic Programmes</span>
+    <h2 class="section-title">Available Courses</h2>
+    <p class="section-sub" style="margin:0 auto">Explore all undergraduate programmes offered across FUADSI's three faculties for the 2026/2027 session.</p>
+  </div>
+  <div class="faculty-tabs" id="faculty-tabs"></div>
+  <div class="courses-grid" id="courses-grid"></div>
+</section>
+
+
+<!-- CAMPUS PHOTO -->
+<div style="overflow:hidden;max-height:380px;position:relative;">
+  <img src="gate.jpg" alt="FUADSI Campus Gate, Iragbiji" style="width:100%;object-fit:cover;display:block;">
+  <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(13,31,17,.85) 0%, transparent 60%);"></div>
+  <div style="position:absolute;bottom:2rem;left:clamp(1rem,5vw,5rem);color:white;">
+    <p style="font-family:'Playfair Display',serif;font-size:clamp(1rem,2.5vw,1.6rem);font-weight:700;">FUADSI Campus Gate — Iragbiji, Osun State</p>
+    <p style="font-size:.82rem;color:#a8c4b0;margin-top:.3rem;">Federal University of Agriculture and Development Studies, Iragbiji</p>
+  </div>
+</div>
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-grid">
+    <div>
+      <span class="section-label">About the University</span>
+      <h2 class="section-title">Federal University of Agriculture & Development Studies</h2>
+      <p class="section-sub">FUADSI was established to drive agricultural research, innovation, and rural development across Nigeria. Located in the historic town of Iragbiji, Osun State, the university combines academic excellence with a strong focus on applied sciences.</p>
+      <div class="about-features">
+        <div class="about-feat">
+          <div class="feat-icon">🌾</div>
+          <div>
+            <div class="feat-title">Agricultural Excellence</div>
+            <div class="feat-desc">Specialising in food security, rural development, and agricultural innovation for Nigeria's growing population.</div>
+          </div>
+        </div>
+        <div class="about-feat">
+          <div class="feat-icon">🔬</div>
+          <div>
+            <div class="feat-title">Research-Driven Learning</div>
+            <div class="feat-desc">Emphasis on practical, research-led education across natural sciences, social sciences, and technology.</div>
+          </div>
+        </div>
+        <div class="about-feat">
+          <div class="feat-icon">🏛️</div>
+          <div>
+            <div class="feat-title">Federal Institution</div>
+            <div class="feat-desc">Fully accredited federal university under the National Universities Commission (NUC) with nationwide recognition.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="contact-box">
+        <h4>📬 Contact & Location</h4>
+        <div class="contact-item">
+          <div class="ci-icon">📍</div>
+          <div>
+            <div class="ci-label">Address</div>
+            <div class="ci-val">Iragbiji, Boripe LGA, Osun State, Nigeria</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="ci-icon">🌐</div>
+          <div>
+            <div class="ci-label">Website</div>
+            <div class="ci-val">www.fuadsi.edu.ng</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="ci-icon">📧</div>
+          <div>
+            <div class="ci-label">Admissions Email</div>
+            <div class="ci-val">admissions@fuadsi.edu.ng</div>
+          </div>
+        </div>
+
+        <div style="margin-top:1.5rem;padding:1rem;border-radius:.6rem;background:rgba(200,168,58,.1);border:1px solid rgba(200,168,58,.2);">
+          <p style="font-size:.82rem;color:#c8a83a;line-height:1.6;">⚠️ <strong>Fraud Alert:</strong> FUADSI does not authorise any agent, individual or third party to collect money or process admission on its behalf. All admissions are done through the official portal only.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p><strong>FUADSI</strong> — Federal University of Agriculture and Development Studies, Iragbiji &nbsp;|&nbsp; Osun State, Nigeria &nbsp;|&nbsp; 2026/2027 Academic Session</p>
+  
+</footer>
+
+<script>
+// ── COURSES DATA ──
+const faculties = [
+  {
+    id: 'agric',
+    name: '🌱 Agriculture & Renewable Natural Resources',
+    short: 'Agriculture',
+    icon: '🌾',
+    courses: [
+      'Food Science and Technology','Soil Science','Horticulture and Landscape Management',
+      'Agricultural Economics','Agricultural Extension','Agribusiness','Crop Science',
+      'Forestry and Wildlife Management','Family and Consumer Science',
+      'Water Resources Management and Agro-Meteorology','Fisheries and Aquaculture',
+      'Animal Science','Agriculture'
+    ]
+  },
+  {
+    id: 'social',
+    name: '📊 Social and Management Sciences',
+    short: 'Social Sciences',
+    icon: '📊',
+    courses: [
+      'Accounting','Economics','Business Administration',
+      'Entrepreneurship','Peace Studies and Conflict Resolution'
+    ]
+  },
+  {
+    id: 'science',
+    name: '🔬 Natural and Applied Sciences',
+    short: 'Natural Sciences',
+    icon: '🔬',
+    courses: [
+      'Computer Science','Mathematics','Physics with Electronics',
+      'Industrial Chemistry','Plant Science (Botany)',
+      'Animal and Environmental Biology (Zoology)','Chemistry',
+      'Biochemistry','Meteorology','Microbiology'
+    ]
+  }
+];
+
+let activeTab = 'agric';
+
+function renderTabs() {
+  const container = document.getElementById('faculty-tabs');
+  container.innerHTML = '';
+  faculties.forEach(f => {
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn' + (f.id === activeTab ? ' active' : '');
+    btn.textContent = f.name;
+    btn.onclick = () => { activeTab = f.id; renderTabs(); renderCourses(); };
+    container.appendChild(btn);
+  });
+}
+
+function renderCourses() {
+  const grid = document.getElementById('courses-grid');
+  const fac = faculties.find(f => f.id === activeTab);
+  grid.innerHTML = '';
+  fac.courses.forEach(c => {
+    const card = document.createElement('div');
+    card.className = 'course-card';
+    card.innerHTML = `
+      <div class="course-icon">${fac.icon}</div>
+      <div>
+        <div class="course-name">${c}</div>
+        <div class="course-faculty">${fac.short}</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+// ── O'LEVEL GRADES UI ──
+function buildGradesUI() {
+  const area = document.getElementById('grades-area');
+  const subjects = ['Subject 1','Subject 2','Subject 3','Subject 4','Subject 5'];
+  const grades = ['A1','B2','B3','C4','C5','C6','F9'];
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:.75rem;width:100%';
+  subjects.forEach((s, i) => {
+    const group = document.createElement('div');
+    group.innerHTML = `<div class="grade-label">${s}</div>
+      <select id="grade${i}">
+        ${grades.map(g => `<option value="${g}">${g}</option>`).join('')}
+      </select>`;
+    wrapper.appendChild(group);
+  });
+  area.appendChild(wrapper);
+}
+
+// ── SCORING ──
+const gradeMap = { A1:8, B2:7, B3:6, C4:5, C5:4, C6:3, F9:0 };
+
+function calculate() {
+  const error = document.getElementById('calc-error');
+  error.classList.remove('show');
+
+  const jamb = parseFloat(document.getElementById('jamb').value);
+  if (isNaN(jamb) || jamb < 0 || jamb > 400) {
+    error.textContent = '⚠️ Please enter a valid JAMB score between 0 and 400.';
+    error.classList.add('show'); return;
+  }
+
+  const resultCard = document.getElementById('result-card');
+  resultCard.classList.remove('visible');
+
+  if (jamb < 150) {
+    showResult({ eligible: false, jamb, jambScore: 0, olevelScore: 0, total: 0 });
+    return;
+  }
+
+  let olevelTotal = 0;
+  for (let i = 0; i < 5; i++) {
+    const g = document.getElementById(`grade${i}`).value;
+    olevelTotal += gradeMap[g] || 0;
+  }
+
+  const maxOLevel = 8 * 5; // 40
+  const jambScore = (jamb / 400) * 60;
+  const olevelScore = (olevelTotal / maxOLevel) * 40;
+  const total = jambScore + olevelScore;
+
+  showResult({ eligible: true, jamb, jambScore, olevelScore, total });
+}
+
+function showResult({ eligible, jamb, jambScore, olevelScore, total }) {
+  const rc = document.getElementById('result-card');
+  const eb = document.getElementById('elig-badge');
+  const resJamb = document.getElementById('res-jamb');
+  const resOlevel = document.getElementById('res-olevel');
+  const resTotal = document.getElementById('res-total');
+  const progFill = document.getElementById('prog-fill');
+  const progLabel = document.getElementById('prog-label');
+  const statusTag = document.getElementById('status-tag');
+  const resultMsg = document.getElementById('result-msg');
+
+  if (!eligible) {
+    eb.textContent = '❌ Not Eligible';
+    eb.className = 'eligibility-badge not-eligible';
+    resJamb.textContent = '—';
+    resOlevel.textContent = '—';
+    resTotal.textContent = '0.00';
+    progFill.style.width = '0%';
+    progLabel.textContent = 'N/A';
+    statusTag.textContent = '⛔ Below Minimum JAMB Threshold';
+    statusTag.className = 'status-tag status-vlow';
+    resultMsg.textContent = `Your JAMB score of ${jamb} is below the minimum requirement of 150. You are not eligible to participate in FUADSI's screening exercise for this session.`;
+    rc.classList.add('visible');
+    rc.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return;
+  }
+
+  eb.textContent = '✅ Eligible for Screening';
+  eb.className = 'eligibility-badge eligible';
+  resJamb.textContent = jambScore.toFixed(2);
+  resOlevel.textContent = olevelScore.toFixed(2);
+  resTotal.textContent = total.toFixed(2);
+  progFill.style.width = '0%';
+  setTimeout(() => { progFill.style.width = Math.min(total, 100) + '%'; }, 100);
+  progLabel.textContent = total.toFixed(2) + ' / 100';
+
+  let status, msg, cls;
+  if (total >= 70) {
+    status = '🏆 Highly Competitive'; cls = 'status-tag status-high';
+    msg = `Outstanding! A score of ${total.toFixed(2)} places you in the highly competitive bracket. You have an excellent chance of securing admission into your chosen programme at FUADSI. Ensure your credentials are ready for verification.`;
+  } else if (total >= 50) {
+    status = '⚡ Moderate Chance'; cls = 'status-tag status-mod';
+    msg = `Good standing! A score of ${total.toFixed(2)} gives you a moderate chance of admission. The competition can be tight — ensure all your documents are in order and consider strengthening your application where possible.`;
+  } else if (total >= 30) {
+    status = '⚠️ Low Chance'; cls = 'status-tag status-low';
+    msg = `Your score of ${total.toFixed(2)} is within the low chance range. While admission is possible for less competitive programmes, you may want to explore alternative options or consider re-sitting JAMB.`;
+  } else {
+    status = '❌ Very Low Chance'; cls = 'status-tag status-vlow';
+    msg = `A score of ${total.toFixed(2)} puts you in the very low chance category. You may wish to consider improving your JAMB score or O'Level results. Consult the FUADSI admissions office for further guidance.`;
+  }
+  statusTag.textContent = status;
+  statusTag.className = cls;
+  resultMsg.textContent = msg;
+  rc.classList.add('visible');
+  rc.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ── NAV TOGGLE ──
+function toggleNav() {
+  document.getElementById('navLinks').classList.toggle('open');
+}
+
+// ── INIT ──
+buildGradesUI();
+renderTabs();
+renderCourses();
+</script>
+</body>
+</html>
